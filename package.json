@@ -1,5 +1,5 @@
 {
-  "name": "@rollup/auto-index-ts",
+  "name": "rollup-auto-index-ts",
   "version": "1.0.0",
   "main": "src/index.ts",
   "files": [

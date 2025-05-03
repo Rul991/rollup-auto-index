@@ -7,7 +7,7 @@ This Rollup plugin automatically generates an index file (e.g., `index.ts`) that
 Install the plugin using npm:
 
 ```bash
-npm install -D @rollup/auto-index-ts
+npm install -D rollup-auto-index-ts
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ To use this plugin, add it to your Rollup configuration file.
 First, import the plugin:
 
 ```javascript
-import createIndexPlugin from '@rollup/auto-index-ts'
+import createIndexPlugin from 'rollup-auto-index-ts'
 ```
 
 Then, add it to the plugins array with the desired options:
