@@ -1,7 +1,7 @@
 {
   "name": "rollup-auto-index-ts",
-  "version": "1.0.0",
-  "main": "src/index.ts",
+  "version": "1.0.1",
+  "main": "src/index.js",
   "files": [
     "dist/*"
   ],
