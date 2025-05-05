@@ -33,7 +33,7 @@ const getExportString = (filePath: string, content: string): string => {
         return ''
     }
     
-    return `import ${importName} from './${pathWithoutExt}'\n`
+    return `export ${importName} from './${pathWithoutExt}'\n`
 }
 
 const removeFirstFolder = (filePath: string) => {
@@ -75,7 +75,10 @@ const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
 const createIndexPlugin = (options: AutoIndexPluginOptions): Plugin => ({
     name: 'create-index-plugin',
     async buildStart() {
-        await unlink(options.filename)
+        try {
+            await unlink(options.filename)
+        }
+        catch(e) {}
         let exportString = await createIndexFileContent(options)
         await writeFile(options.filename, exportString)
     }
