@@ -31,7 +31,7 @@ export default {
       watchedDir: 'src/modules',
       excludeFiles: ['utils.ts'],
       excludeDirs: ['tests'],
-      allowedExtensions: ['ts', 'js', 'tsx', 'jsx']
+      allowedExtensions: ['ts']
     })
   ]
 }
