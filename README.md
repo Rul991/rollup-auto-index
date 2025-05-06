@@ -1,13 +1,13 @@
 # Rollup Plugin: Auto Index
 
-This Rollup plugin automatically generates an index file (e.g., `index.ts`) that re-exports all other TypeScript files in a specified directory, making it easier to manage exports in your project.
+This Rollup plugin automatically generates an index file (e.g., `index.ts`) that re-exports all other JavaScript/TypeScript files in a specified directory, making it easier to manage exports in your project.
 
 ## Installation
 
 Install the plugin using npm:
 
 ```bash
-npm install -D rollup-auto-index-ts
+npm install -D rollup-auto-index
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ To use this plugin, add it to your Rollup configuration file.
 First, import the plugin:
 
 ```javascript
-import createIndexPlugin from 'rollup-auto-index-ts'
+import createIndexPlugin from 'rollup-auto-index'
 ```
 
 Then, add it to the plugins array with the desired options:
@@ -30,7 +30,8 @@ export default {
       filename: 'src/modules/index.ts',
       watchedDir: 'src/modules',
       excludeFiles: ['utils.ts'],
-      excludeDirs: ['tests']
+      excludeDirs: ['tests'],
+      allowedExtensions: ['ts', 'js', 'tsx', 'jsx']
     })
   ]
 }
@@ -49,3 +50,5 @@ The plugin accepts an options object with the following properties:
 - **`excludeFiles`** (string[], optional): An array of file paths (relative to `watchedDir`) to exclude from the index. The `filename` itself is automatically excluded.
 
 - **`excludeDirs`** (string[], optional): An array of directory paths (relative to `watchedDir`) to exclude from the index. Any files in these directories will not be included.
+
+- **`allowedExtensions`** (string[], optional): An array of file extensions to include in the index. Defaults to `['ts', 'js', 'tsx', 'jsx']`.

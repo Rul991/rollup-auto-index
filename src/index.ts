@@ -12,6 +12,7 @@ interface AutoIndexPluginOptions {
     watchedDir: string
     excludeFiles?: string[]
     excludeDirs?: string[]
+    allowedExtensions?: string[]
 }
 
 const removeExtension = (filePath: string) => {
@@ -22,7 +23,7 @@ const removeExtension = (filePath: string) => {
 }
 
 const getExportString = (filePath: string, content: string): string => {
-    const className = path.basename(filePath, '.ts')
+    const className = path.basename(filePath, path.extname(filePath))
     const pathWithoutExt = removeExtension(filePath)
     let importName = '*'
 
@@ -48,6 +49,8 @@ const removeFirstFolder = (filePath: string) => {
 
 const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
     options.excludeFiles = [...(options.excludeFiles ?? []), options.filename]
+    options.allowedExtensions = options.allowedExtensions ?? ['ts', 'tsx', 'js', 'jsx']
+
     let totalString = ''
     let {watchedDir, excludeFiles = [], excludeDirs = []} = options
 
@@ -56,16 +59,21 @@ const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
     for (const file of files) {
         const {name} = file
         const inWatchedDir = path.join(file.parentPath) == path.join(watchedDir)
-        const fullPath = !inWatchedDir ? path.join(removeFirstFolder(file.parentPath), name) : name
+        const relativePath = !inWatchedDir ? path.join(removeFirstFolder(file.parentPath), name) : name
         
         if(file.isFile()) {
-            if(excludeFiles.includes(fullPath)) continue
-            if(excludeDirs.includes(path.dirname(fullPath))) continue
+            if(excludeFiles.includes(relativePath)) continue
+            if(excludeDirs.includes(path.dirname(relativePath))) continue
 
-            const searchPath = path.join(watchedDir, fullPath)
+            for (const ext of options.allowedExtensions) {
+                if(path.extname(relativePath) == `.${ext}`)
+                    continue
+            }
+
+            const searchPath = path.join(watchedDir, relativePath)
 
             const content = await readFile(searchPath, {encoding: 'utf-8'})
-            totalString += getExportString(fullPath, content)
+            totalString += getExportString(relativePath, content)
         }
     }
 
@@ -74,14 +82,20 @@ const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
 
 const createIndexPlugin = (options: AutoIndexPluginOptions): Plugin => ({
     name: 'create-index-plugin',
-    async buildStart() {
+    async options(opt) {
         try {
             await unlink(options.filename)
         }
         catch(e) {}
+        
         let exportString = await createIndexFileContent(options)
         await writeFile(options.filename, exportString)
+        console.log(`created index file at ${options.filename}`)
+
+        return opt
     }
 })
 
 export default createIndexPlugin
+
+// Надо пофиксить прикол с тем, что при сборке, сборка не завершается, а тупо зависает
