@@ -16,7 +16,10 @@ export default [
       typescript({
         tsconfig: './tsconfig.json'
       }),
-      terser({'keep_fnames': true, 'keep_classnames': true})
+      terser({
+        'keep_fnames': true, 
+        'keep_classnames': true
+      })
     ],
   }
 ];

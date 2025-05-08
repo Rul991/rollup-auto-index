@@ -13,18 +13,19 @@ interface AutoIndexPluginOptions {
     excludeFiles?: string[]
     excludeDirs?: string[]
     allowedExtensions?: string[]
+    useExtension?: boolean
 }
 
-const removeExtension = (filePath: string) => {
+const removeExtension = (filePath: string, useExtension: boolean) => {
     const dir = path.dirname(filePath)
-    const baseNameWithoutExt = path.basename(filePath, path.extname(filePath))
+    const baseNameWithoutExt = path.basename(filePath, useExtension ? '' : path.extname(filePath))
 
     return path.join(dir, baseNameWithoutExt)
 }
 
-const getExportString = (filePath: string, content: string): string => {
+const getExportString = (filePath: string, content: string, useExtension: boolean): string => {
     const className = path.basename(filePath, path.extname(filePath))
-    const pathWithoutExt = removeExtension(filePath)
+    const pathWithoutExt = removeExtension(filePath, useExtension)
     let importName = '*'
 
     if(content.includes('export default')) {
@@ -50,6 +51,7 @@ const removeFirstFolder = (filePath: string) => {
 const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
     options.excludeFiles = [...(options.excludeFiles ?? []), options.filename]
     options.allowedExtensions = options.allowedExtensions ?? ['ts', 'tsx', 'js', 'jsx']
+    options.useExtension = options.useExtension ?? false
 
     let totalString = ''
     let {watchedDir, excludeFiles = [], excludeDirs = []} = options
@@ -73,7 +75,7 @@ const createIndexFileContent = async (options: AutoIndexPluginOptions) => {
             const searchPath = path.join(watchedDir, relativePath)
 
             const content = await readFile(searchPath, {encoding: 'utf-8'})
-            totalString += getExportString(relativePath, content)
+            totalString += getExportString(relativePath, content, options.useExtension)
         }
     }
 
